@@ -1,0 +1,7 @@
+{
+  "name": "mal-seasonal",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}

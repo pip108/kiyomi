@@ -1,0 +1,12 @@
+.watched-label {
+   margin-left: 20px;
+}
+
+ion-thumbnail {
+   height: 120px;
+   width: 90px;
+}
+
+.entry-item {
+   height: 400px;
+}

@@ -1,0 +1,26 @@
+.flex-container {
+     display: flex;
+     flex-direction: row;
+     flex-wrap: nowrap;
+     padding: 10px;
+}
+
+.anime-image {
+   object-fit: contain;
+   max-height: 100%;
+}
+
+.card-image-container {
+   display: flex;
+   height: 300px;
+}
+
+.card-content-container {
+   padding: 10px;
+   flex-grow: 1;
+}
+
+.checkbox {
+   margin-top: 0;
+   margin-bottom: 0;
+}

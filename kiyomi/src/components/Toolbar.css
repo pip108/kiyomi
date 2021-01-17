@@ -1,0 +1,7 @@
+.user-modal {
+   --height: 100px;
+}
+
+.user-modal ion-item {
+   padding: 20px;
+}
