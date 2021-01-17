@@ -1,4 +1,4 @@
-import { IonCol, IonContent, IonGrid, IonHeader, IonPage, IonRow, IonSpinner } from '@ionic/react';
+import { IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonPage, IonRow, IonSpinner } from '@ionic/react';
 import React, { useEffect, useState } from 'react';
 import { map } from 'rxjs/operators';
 import Loading from '../components/Loading';
@@ -11,14 +11,14 @@ import { DateUtil } from '../util/DateUtil';
 
 const Watched: React.FC = () => {
 
-   const weekday = (new Date).getDay();
+   const weekday = (new Date()).getDay();
 
 
    const [days, setDays] = useState([] as {
       anime: AnimeEntry[],
       date: Date
    }[]);
-   const [showDays, setShowDays] = useState(3);
+   const showDays = 7;
 
    const [loading, setLoading] = useState(true);
    useEffect(() => {
@@ -42,7 +42,16 @@ const Watched: React.FC = () => {
          }))
          .subscribe(setDays);
       return () => s.unsubscribe();
-   }, []);
+   }, [weekday]);
+
+   let childrenLoaded = 0;
+   const [allChildrenLoaded, setAllChildrenLoaded] = useState(false);
+   const childLoaded = () => {
+      childrenLoaded++;
+      if (childrenLoaded === days.length) {
+         setAllChildrenLoaded(true)
+      }
+   };
 
    return (
       <IonPage>
@@ -50,19 +59,31 @@ const Watched: React.FC = () => {
             <Toolbar />
          </IonHeader>
          <IonContent>
-            { loading && 
+            {loading &&
                <Loading />
             }
-            { !loading &&
+            {!loading &&
                <IonGrid>
                   <IonRow>
                      <IonCol offset="3" size="6">
                         {
                            days.map((d, i) => <div key={d.date.getDate()}>
-                              <h1>{i === 0 ? 'Today (' : ''}{DateUtil.getDateLabel(d.date)}{i === 0 ? ')' : ''}</h1>
+                              {allChildrenLoaded &&
+                                 <h1>
+                                    {i === 0 ? 'Today (' : ''}
+                                    {DateUtil.getDateLabel(d.date)}
+                                    {i === 0 ? ')' : ''}
+                                 </h1>
+                              }
                               {
-                                 d.anime.length > 0 ? d.anime.map(a => <WatchedItem anime={a} key={a.id}></WatchedItem>)
-                                    : <p style={{ marginLeft: '20px' }}><strong>No anime :(</strong></p>
+                                 d.anime.length > 0 ? d.anime.map(a => <WatchedItem
+                                    loaded={childLoaded} anime={a} key={a.id}></WatchedItem>)
+                                    : <IonItem>
+                                       <div style={{ width: '90px', height: '120px' }}></div>
+                                       <IonLabel>
+                                          {allChildrenLoaded && <strong>Nothing (´-ω-`)</strong>}
+                                       </IonLabel>
+                                    </IonItem>
                               }
                            </div>
                            )

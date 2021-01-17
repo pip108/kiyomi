@@ -7,7 +7,8 @@ import Countdown from './Countdown';
 import './WatchedItem.css'
 
 interface WatchedItemProps {
-   anime: AnimeEntry,
+   anime: AnimeEntry;
+   loaded: () => void;
 }
 
 const WatchedItem: React.FC<WatchedItemProps> = props => {
@@ -26,6 +27,10 @@ const WatchedItem: React.FC<WatchedItemProps> = props => {
       const date = new Date();
       setShowCountdown(date.getDay() === props.anime.adjusted_weekday);
    }, [props.anime.adjusted_weekday]);
+
+   useEffect(() => {
+      props.loaded()
+   }, [props.loaded])
 
    return (
       <IonItem>

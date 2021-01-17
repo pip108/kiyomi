@@ -1,6 +1,6 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
-const { access_token } = require('./token.json');
+const { access_token } = require('../token.json');
 
 const app = express();
 const port = 3001;

@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  kiyomi-api:
+    build:
+      context: ./kiyomi-api
+    ports:
+      - 3002:3002
+  kiyomi:
+    restart: unless-stopped
+    build:
+      context: ./kiyomi
+    ports:
+      - 80:80
