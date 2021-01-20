@@ -1,4 +1,4 @@
-import { IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonPage, IonRow, IonSpinner } from '@ionic/react';
+import { IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonPage, IonRouterLink, IonRow } from '@ionic/react';
 import React, { useEffect, useState } from 'react';
 import { map } from 'rxjs/operators';
 import Loading from '../components/Loading';
@@ -22,14 +22,16 @@ const Watched: React.FC = () => {
 
    const [loading, setLoading] = useState(true);
    useEffect(() => {
-      const s = AnimeStore.loading$.subscribe(setLoading);
+      const s = AnimeStore.watchedLoading$.subscribe(setLoading);
       return () => s.unsubscribe();
    }, []);
 
+   const [watchCount, setWatchCount] = useState(0);
    useEffect(() => {
       const s = AnimeStore.watched$
          .pipe(map(watched => {
             const set_days: { anime: AnimeEntry[], date: Date }[] = [];
+            setWatchCount(watched.length);
             for (let i = 0; i < showDays; i++) {
                const set_date = new Date();
                set_date.setDate(set_date.getDate() + i);
@@ -45,7 +47,7 @@ const Watched: React.FC = () => {
    }, [weekday]);
 
    let childrenLoaded = 0;
-   const [allChildrenLoaded, setAllChildrenLoaded] = useState(false);
+   const [allChildrenLoaded, setAllChildrenLoaded] = useState(!days.some(x => x.anime.length > 0));
    const childLoaded = () => {
       childrenLoaded++;
       if (childrenLoaded === days.length) {
@@ -53,46 +55,55 @@ const Watched: React.FC = () => {
       }
    };
 
+
    return (
       <IonPage>
          <IonHeader>
-            <Toolbar />
+            <Toolbar showFilter={false} />
          </IonHeader>
-         <IonContent>
-            {loading &&
-               <Loading />
-            }
-            {!loading &&
-               <IonGrid>
-                  <IonRow>
-                     <IonCol offset="3" size="6">
-                        {
-                           days.map((d, i) => <div key={d.date.getDate()}>
-                              {allChildrenLoaded &&
-                                 <h1>
-                                    {i === 0 ? 'Today (' : ''}
-                                    {DateUtil.getDateLabel(d.date)}
-                                    {i === 0 ? ')' : ''}
-                                 </h1>
-                              }
+               <IonContent>
+                  {loading &&
+                     <Loading />
+                  }
+                  {!loading &&
+                     <IonGrid>
+                        <IonRow>
+                           <IonCol offset="3" size="6">
                               {
-                                 d.anime.length > 0 ? d.anime.map(a => <WatchedItem
-                                    loaded={childLoaded} anime={a} key={a.id}></WatchedItem>)
-                                    : <IonItem>
-                                       <div style={{ width: '90px', height: '120px' }}></div>
-                                       <IonLabel>
-                                          {allChildrenLoaded && <strong>Nothing (´-ω-`)</strong>}
-                                       </IonLabel>
-                                    </IonItem>
+                                 watchCount === 0 ?
+                                 <p style={{textAlign: 'center'}}><strong><IonRouterLink href="/season">Add watched anime here</IonRouterLink></strong></p>
+                                 :
+
+                                 days.map((d, i) => <div key={d.date.getDate()}>
+                                    {allChildrenLoaded &&
+                                       <h1>
+                                          {i === 0 ? 'Today (' : ''}
+                                          {DateUtil.getDateLabel(d.date)}
+                                          {i === 0 ? ')' : ''}
+                                       </h1>
+                                    }
+                                    {
+                                       d.anime.length > 0 ? d.anime.map(a => <WatchedItem
+                                          loaded={childLoaded} anime={a} key={a.id}></WatchedItem>)
+                                          : <IonItem>
+                                             {
+                                                allChildrenLoaded ?
+                                                   <img src="assets/no_anime.png" style={{ width: '90px', height: '120px' }} alt="Nothing" />
+                                                   : <div style={{ width: '90px', height: '120px' }}></div>
+                                             }
+                                             <IonLabel style={{ marginLeft: '20px ' }}>
+                                                {allChildrenLoaded && <strong>Nothing (´-ω-`)</strong>}
+                                             </IonLabel>
+                                          </IonItem>
+                                    }
+                                 </div>
+                                 )
                               }
-                           </div>
-                           )
-                        }
-                     </IonCol>
-                  </IonRow>
-               </IonGrid>
-            }
-         </IonContent>
+                           </IonCol>
+                        </IonRow>
+                     </IonGrid>
+                  }
+               </IonContent>
       </IonPage>
    )
 }

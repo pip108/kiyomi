@@ -13,7 +13,7 @@ const proxyOptions = {
       '^/anime':  '/v2/anime',
    },
    router: {
-      '/kiyomi': 'http://localhost:3002'
+      '/kiyomi': 'http://kiyomi-api:3002'
    }
 }
 

@@ -1,6 +1,6 @@
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { AnimeEntry } from './AnimeEntry';
-import {  map, switchMap, tap } from 'rxjs/operators';
+import {  map, switchMap } from 'rxjs/operators';
 import { HttpClient } from './HttpClient';
 import { UserStore } from './UserStore';
 import { DateUtil } from '../util/DateUtil';
@@ -9,9 +9,11 @@ export class AnimeProvider {
 
    private seasonSubject = new BehaviorSubject([] as AnimeEntry[]);
    private filterSubject = new BehaviorSubject('');
-   private loadingSubject = new BehaviorSubject(true);
+   private seasonLoadingSubject = new BehaviorSubject(true);
+   private watchedLoadingSubject = new BehaviorSubject(true);
 
-   public loading$ = this.loadingSubject.asObservable();
+   public watchedLoading$ = this.watchedLoadingSubject.asObservable();
+   public seasonLoading$ = this.seasonLoadingSubject.asObservable();
 
    public season$ = combineLatest([this.seasonSubject, this.filterSubject])
       .pipe(map(([s, f]) => {
@@ -34,26 +36,30 @@ export class AnimeProvider {
    public watched$ = UserStore.user$.pipe(
       map(u => u ? u.watching : []),
       switchMap(async watchedIds => {
-         this.loadingSubject.next(true);
+         this.watchedLoadingSubject.next(true);
          const fetches: Promise<AnimeEntry>[] = [];
          watchedIds.forEach(wid => fetches.push(HttpClient.get(`anime/${wid}?fields=broadcast,average_episode_duration`)));
          const watched = await Promise.all(fetches);
+         console.log('watched', watched);
          watched.forEach(x => {
+            if (!x.broadcast) {
+               return;
+            }
             const [hour, min] = DateUtil.getLocalAirTime(x.broadcast.start_time);
             x.adjusted_airtime = { hour: hour, min: min };
             x.adjusted_weekday = DateUtil.getLocalAirday(x.broadcast.day_of_the_week, x.broadcast.start_time);
          })
-         this.loadingSubject.next(false);
+         this.watchedLoadingSubject.next(false);
          return watched;
       })
    );
 
    private load = async () => {
-      const response = await window.fetch('v2/anime/season/2021/winter?limit=100');
+      const response = await window.fetch('anime/season/2021/winter?limit=100');
       const json = await response.json();
       const data = json.data.map((x: { node: AnimeEntry }) => x.node);
       this.seasonSubject.next(data);
-      this.loadingSubject.next(false);
+      this.seasonLoadingSubject.next(false);
    };
 
    constructor() {

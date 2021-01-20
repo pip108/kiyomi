@@ -2,8 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const sqlite = require('sqlite3');
 
-// 季世三
-const db = new sqlite.Database('./kiyomi.db')
+const db = new sqlite.Database(`${process.env.DB_DIR}/kiyomi.db`)
 db.run(`
    CREATE TABLE
    if not exists user
@@ -24,8 +23,8 @@ db.run(`
    );
    `);
 
-const port = 3002;
-const host = 'localhost';
+const port = parseInt(process.env.PORT);
+const host = process.env.HOST;
 
 const app = express();
 app.use(bodyParser.json());
@@ -89,10 +88,49 @@ async function getUser(id) {
    });
 }
 
+async function getUserByName(name) {
+   return new Promise(async (resolve, _) => {
+      const rows = await select(`SELECT * FROM user LEFT OUTER JOIN user_watching
+         ON user.id = user_watching.userid WHERE name = ?`, [name]);
+
+      console.log('rows in getUser', rows);
+
+      if (rows.length < 1) {
+         resolve(null);
+         return;
+      }
+
+      const user = { id: rows[0].id, name: rows[0].name, watching: rows[0].animeid ? [rows[0].animeid] : [] };
+      for (let i = 1; i < rows.length; i++) {
+         user.watching.push(rows[i].animeid)
+      }
+
+      resolve(user);
+   });
+}
+
 async function userExists(userId) {
    const rows = await select('SELECT 1 FROM user WHERE id = ?', [userId]);
    return rows.length > 0 ? true : false;
 }
+
+app.get('/kiyomi/user', async (req, res) => {
+   console.log(`get /kiyomi/user`);
+   if (!req.query.name) {
+      res.sendStatus(400);
+      return;
+   }
+   try {
+      const user = await getUserByName(req.query.name.toString());
+      if (!user) {
+         res.sendStatus(404);
+         return;
+      }
+      res.json(user);
+   } catch (e) {
+      res.sendStatus(500);
+   }
+});
 
 app.get('/kiyomi/user/:id', async (req, res) => {
    console.log(`get /kiyomi/user/${req.params.id}`);
@@ -119,9 +157,9 @@ app.post('/kiyomi/user', async (req, res) => {
    } else {
       let user = req.body;
       try {
-         user.id = await insert('INSERT INTO user (name) VALUES(?)', [user.name]);
-         user = getUser(user.id);
-         res.status(201).json(user);
+         const id = await insert('INSERT INTO user (name) VALUES(?)', [user.name]);
+         const createdUser = await getUser(id);
+         res.status(201).json(createdUser);
       } catch (e) {
          res.sendStatus(500);
       }
@@ -131,7 +169,7 @@ app.post('/kiyomi/user', async (req, res) => {
 app.put('/kiyomi/user/:userId', async (req, res) => {
    console.log(`put /kiyomi/user/${req.params.userId}`, req.body);
    let user = req.body;
-   if (!user || isNaN(user.id) || user.id !== req.params.userId || !user.name) {
+   if (!user || isNaN(user.id) || user.id !== Number(req.params.userId) || !user.name) {
       res.sendStatus(400);
       return;
    }
@@ -208,4 +246,4 @@ app.get('/kiyomi/user/:userId/watched', async (req, res) => {
    res.json(watching);
 });
 
-app.listen(port, host, () => console.log(`Kiyomi API listening on ${host}:${port}`))
+app.listen(port, host, () => console.log(`Kiyomi API started on ${host}:${port}`))

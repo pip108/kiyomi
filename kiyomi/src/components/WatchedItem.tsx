@@ -30,7 +30,7 @@ const WatchedItem: React.FC<WatchedItemProps> = props => {
 
    useEffect(() => {
       props.loaded()
-   }, [props.loaded])
+   }, [props])
 
    return (
       <IonItem>
@@ -45,7 +45,7 @@ const WatchedItem: React.FC<WatchedItemProps> = props => {
                   <span> - <Countdown anime={props.anime} /></span>}</h2>
             <h3><strong>{props.anime.title}</strong></h3>
             <p>
-               <a target="_blank" href={`https://nyaa.si/?f=0&c=1_2&q=${searchTerm}`}>Search nyaa.si</a>
+               <a target="_blank" rel="noopener noreferrer" href={`https://nyaa.si/?f=0&c=1_2&q=${searchTerm}`}>Search nyaa.si</a>
             </p>
          </IonLabel>
       </IonItem>

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Route } from 'react-router-dom';
-import { IonApp, IonContent, IonHeader, IonPage, IonRouterOutlet, IonSpinner } from '@ionic/react';
+import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
 /* Core CSS required for Ionic components to work properly */
@@ -23,14 +23,8 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import Season from './pages/Season';
 import Watched from './pages/Watched';
-import { UserStore } from './models/UserStore';
-import { AnimeStore } from './models/AnimeStore';
-import Toolbar from './components/Toolbar';
-import AnimeList from './components/AnimeList';
 
 const App: React.FC = () => {
-
-   const [loading, setLoading] = useState(true);
 
    return (
       <IonApp>

@@ -11,14 +11,14 @@ const Season: React.FC = () => {
    const [loading, setLoading] = useState(true);
 
    useEffect(() => {
-      const s = AnimeStore.loading$.subscribe(setLoading);
+      const s = AnimeStore.seasonLoading$.subscribe(setLoading);
       return () => s.unsubscribe();
    }, [])
 
    return (
       <IonPage>
          <IonHeader>
-            <Toolbar></Toolbar>
+            <Toolbar showFilter={true}></Toolbar>
          </IonHeader>
          <IonContent>
             <IonHeader collapse="condense">

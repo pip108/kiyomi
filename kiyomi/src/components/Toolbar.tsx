@@ -7,7 +7,11 @@ import './Toolbar.css';
 import { tap } from 'rxjs/operators';
 import { AnimeStore } from '../models/AnimeStore';
 
-const Toolbar: React.FC = () => {
+export interface ToolbarProps {
+   showFilter: boolean;
+}
+
+const Toolbar: React.FC<ToolbarProps> = props => {
 
    const [user, setUser] = useState<User | null>(null);
    const [showModal, setShowModal] = useState(false);
@@ -21,10 +25,15 @@ const Toolbar: React.FC = () => {
       return () => s.unsubscribe();
    }, [])
 
-   const setUserClick = () => {
+   const setUserClick = async () => {
       if (user) {
          UserStore.setUser(user);
       } else {
+         const savedUser = await UserStore.getUserByName(userNameValue);
+         if (savedUser) {
+            UserStore.setUser(savedUser);
+            return;
+         }
          UserStore.setUser({ id: 0, name: userNameValue, watching: [] })
       }
       closeUserModal();

@@ -12,31 +12,27 @@ services:
     build:
       context: ./kiyomi-api
     ports:
-      - ${KIYOMI_API_PORT}:${KIYOMI_API_PORT}
+      - ${KIYOMI_API_PORT}
   mal-api-proxy:
     restart: unless-stopped
     environment: 
-      - PORT=${MAL_API_PROXY_PORT}:${MAL_API_PROXY_PORT}
+      - PORT=${MAL_API_PROXY_PORT}
       - HOST=0.0.0.0
-      - NODE_ENV=development
+      - NODE_ENV=production
     build: 
       context: ./mal-api-proxy
     ports:
       - ${MAL_API_PROXY_PORT}
   kiyomi:
-    image: kiyomi-dev
-    environment: 
-      - CHOKIDAR_USEPOLLING=true
-    volumes:
-      - ./kiyomi/:/kiyomi/
-      - /kiyomi/node_modules/
+    restart: unless-stopped
     depends_on:
       - kiyomi-api
       - mal-api-proxy
     build:
       context: ./kiyomi
+      dockerfile: Dockerfile.prod
     ports:
-      - 3000:3000
+      - 80:80
 
 volumes:
   kiyomi-db:

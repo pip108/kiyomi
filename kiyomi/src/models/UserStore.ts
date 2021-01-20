@@ -1,5 +1,4 @@
 import { BehaviorSubject } from "rxjs";
-import { AnimeStore } from "./AnimeStore";
 import { HttpClient } from "./HttpClient";
 
 export interface User {
@@ -37,6 +36,7 @@ export class UserProvider {
       const url = user.id === 0 ? '/kiyomi/user' : `/kiyomi/user/${user.id}`;
       try {
          user = await method(url, user);
+         console.log('user from api', user);
          localStorage.setItem(UserProvider.USERID_STORAGE_KEY, user.id.toString());
          this.userSubject.next({ ...user });
       } catch(e) {
@@ -53,6 +53,17 @@ export class UserProvider {
       } catch (e) {
          console.error(e);
       }
+   }
+
+   public async getUserByName(name: string): Promise<User | null> {
+      try {
+         const user = await HttpClient.get(`kiyomi/user?name=${name}`) as User | null;
+         return user;
+      }
+      catch (e) {
+         console.log(e);
+      }
+      return null;
    }
 
    public async addWatched(animeId: number): Promise<void> {
