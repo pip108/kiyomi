@@ -19,6 +19,9 @@ services:
       - PORT=${MAL_API_PROXY_PORT}
       - HOST=0.0.0.0
       - NODE_ENV=production
+      - MAL_API_CLIENT_ID=${MAL_API_CLIENT_ID}
+      - MAL_API_CLIENT_SECRET=${MAL_API_CLIENT_SECRET}
+      - MAL_API_REFRESH_TOKEN=${MAL_API_REFRESH_TOKEN}
     build: 
       context: ./mal-api-proxy
     ports:

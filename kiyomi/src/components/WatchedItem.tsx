@@ -18,7 +18,7 @@ const WatchedItem: React.FC<WatchedItemProps> = props => {
 
 
    useEffect(() => {
-      let parts = props.anime.title.split(' ');
+      let parts = props.anime.title.replace(/[^aA-zZ\s0-9]/g, ' ').split(' ');
       parts = parts.length > 2 ? parts.reverse().slice(parts.length - 2).reverse() : parts;
       setSearchTerm(parts.join('+'));
    }, [props.anime.title]);

@@ -1,7 +1,7 @@
 FROM node:14-slim
 RUN apt-get update
 RUN apt-get install python -y && apt-get install g++ -y && apt-get install make -y
-WORKDIR /kiyomi-api
+WORKDIR /opt/kiyomi/api
 
 COPY package*.json ./
 RUN npm install --silent

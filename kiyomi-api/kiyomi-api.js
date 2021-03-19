@@ -93,8 +93,6 @@ async function getUserByName(name) {
       const rows = await select(`SELECT * FROM user LEFT OUTER JOIN user_watching
          ON user.id = user_watching.userid WHERE name = ?`, [name]);
 
-      console.log('rows in getUser', rows);
-
       if (rows.length < 1) {
          resolve(null);
          return;
@@ -115,7 +113,7 @@ async function userExists(userId) {
 }
 
 app.get('/kiyomi/user', async (req, res) => {
-   console.log(`get /kiyomi/user`);
+   console.log(`get /kiyomi/user?name=${req.query.name || ''}`);
    if (!req.query.name) {
       res.sendStatus(400);
       return;

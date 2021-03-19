@@ -19,9 +19,9 @@ const Toolbar: React.FC<ToolbarProps> = props => {
    const [filterValue, setFilterValue] = useState('');
 
    useEffect(() => {
-      const s = UserStore.user$.pipe(tap(u => 
-            setUserNameValue(u?.name || '')
-         )).subscribe(setUser);
+      const s = UserStore.user$.pipe(tap(u =>
+         setUserNameValue(u?.name || '')
+      )).subscribe(setUser);
       return () => s.unsubscribe();
    }, [])
 
@@ -29,12 +29,9 @@ const Toolbar: React.FC<ToolbarProps> = props => {
       if (user) {
          UserStore.setUser(user);
       } else {
-         const savedUser = await UserStore.getUserByName(userNameValue);
-         if (savedUser) {
-            UserStore.setUser(savedUser);
-            return;
+         if (!(await UserStore.getUserByName(userNameValue))) {
+            UserStore.setUser({ id: 0, name: userNameValue, watching: [] })
          }
-         UserStore.setUser({ id: 0, name: userNameValue, watching: [] })
       }
       closeUserModal();
    }
@@ -52,23 +49,30 @@ const Toolbar: React.FC<ToolbarProps> = props => {
       setFilterValue(str);
    }
 
+   const handleKeyPress = (key: string) => {
+      if (key === 'Enter') {
+         setUserClick();
+      }
+   }
+
    return (
       <IonToolbar>
-         <IonModal 
-         isOpen={showModal}
-         onDidDismiss={closeUserModal}
-          cssClass="user-modal">
+         <IonModal
+            isOpen={showModal}
+            onDidDismiss={closeUserModal}
+            cssClass="user-modal">
             <IonItem>
                <IonLabel>User</IonLabel>
-               <IonInput value={userNameValue} onIonChange={e => setUserNameValue(e.detail.value!)} ></IonInput>
-                <IonButton onClick={setUserClick}>Login or Create</IonButton>
+               <IonInput autofocus={true} value={userNameValue} onIonChange={e => setUserNameValue(e.detail.value!)}
+                  onKeyPress={e => handleKeyPress(e.key)} />
+               <IonButton onClick={setUserClick}>Login or Create</IonButton>
             </IonItem>
          </IonModal>
          <IonTitle slot="start">{Constants.AppName}</IonTitle>
          <IonButtons slot="secondary">
-            <IonInput value={filterValue} onIonChange={e => filter(e.detail.value!)} placeholder="Filter"></IonInput>
-            <IonButton routerLink="/season">Season</IonButton>
+            {props.showFilter && <IonInput value={filterValue} onIonChange={e => filter(e.detail.value!)} placeholder="Filter"></IonInput>}
             <IonButton routerLink="/">Watched</IonButton>
+            <IonButton routerLink="/season">Season</IonButton>
             <IonButton onClick={openUserModal}><IonIcon icon={personCircleOutline} size="large" color={user ? 'primary' : 'medium'} /></IonButton>
          </IonButtons>
       </IonToolbar>

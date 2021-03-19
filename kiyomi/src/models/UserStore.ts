@@ -55,15 +55,19 @@ export class UserProvider {
       }
    }
 
-   public async getUserByName(name: string): Promise<User | null> {
+   public async getUserByName(name: string): Promise<boolean> {
       try {
-         const user = await HttpClient.get(`kiyomi/user?name=${name}`) as User | null;
-         return user;
+         const user = await HttpClient.get(`kiyomi/user?name=${name}`);
+         if (user) {
+            this.userSubject.next(user);
+            return true;
+         }
+         return false;
       }
       catch (e) {
          console.log(e);
       }
-      return null;
+      return false;
    }
 
    public async addWatched(animeId: number): Promise<void> {

@@ -25,7 +25,6 @@ app.use('', (req, _, next) => {
 app.use('', createProxyMiddleware(proxyOptions));
 
 app.use('', (_, res, next) => {
-   console.log('res', res);
    next();
 });
 

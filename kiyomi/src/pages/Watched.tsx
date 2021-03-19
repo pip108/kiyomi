@@ -12,7 +12,7 @@ import { DateUtil } from '../util/DateUtil';
 const Watched: React.FC = () => {
 
    const weekday = (new Date()).getDay();
-
+   const geh = 'geh';
 
    const [days, setDays] = useState([] as {
       anime: AnimeEntry[],
@@ -36,9 +36,13 @@ const Watched: React.FC = () => {
                const set_date = new Date();
                set_date.setDate(set_date.getDate() + i);
                set_days[i] = {
-                  anime: watched.filter(x => x.adjusted_weekday === (weekday + i)),
+                  anime: watched.filter(x => x.adjusted_weekday === (weekday + i) % 7),
                   date: set_date
                };
+               set_days[i].anime.sort((a, b) => {
+                  return (a.adjusted_airtime.hour * 10 + a.adjusted_airtime.min) -
+                     (b.adjusted_airtime.hour * 10 + b.adjusted_airtime.min); 
+               });
             }
             return set_days;
          }))
