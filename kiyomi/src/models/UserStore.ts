@@ -36,7 +36,6 @@ export class UserProvider {
       const url = user.id === 0 ? '/kiyomi/user' : `/kiyomi/user/${user.id}`;
       try {
          user = await method(url, user);
-         console.log('user from api', user);
          localStorage.setItem(UserProvider.USERID_STORAGE_KEY, user.id.toString());
          this.userSubject.next({ ...user });
       } catch(e) {

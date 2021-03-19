@@ -12,7 +12,6 @@ import { DateUtil } from '../util/DateUtil';
 const Watched: React.FC = () => {
 
    const weekday = (new Date()).getDay();
-   const geh = 'geh';
 
    const [days, setDays] = useState([] as {
       anime: AnimeEntry[],

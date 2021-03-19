@@ -32,7 +32,7 @@ const AnimeList: React.FC = () => {
             <IonRow>
                {season.map(entry =>
                   <IonCol size="4" style={{ height: '320px', marginBottom: '10px' }} key={entry.id}>
-                     <AnimeCard id={entry.id} title={entry.title} image={entry.main_picture.medium} watching={entry.watching}></AnimeCard>
+                     <AnimeCard id={entry.id} title={entry.title} image={entry.main_picture?.medium} watching={entry.watching}></AnimeCard>
                   </IonCol>
                )}
             </IonRow>

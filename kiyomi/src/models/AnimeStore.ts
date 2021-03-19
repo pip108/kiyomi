@@ -35,27 +35,31 @@ export class AnimeProvider {
 
    public watched$ = UserStore.user$.pipe(
       map(u => u ? u.watching : []),
-      switchMap(async watchedIds => {
+      switchMap(async (watchedIds) => {
          this.watchedLoadingSubject.next(true);
          const fetches: Promise<AnimeEntry>[] = [];
-         watchedIds.forEach(wid => fetches.push(HttpClient.get(`anime/${wid}?fields=broadcast,average_episode_duration`)));
+         for (const wid of watchedIds) {
+            fetches.push(HttpClient.get(`anime/${wid}?fields=broadcast,average_episode_duration,end_date,start_date`));
+         }
          const watched = await Promise.all(fetches);
-         console.log('watched', watched);
-         watched.forEach(x => {
-            if (!x.broadcast) {
-               return;
+
+         for (const w of watched) {
+            if (!w.broadcast) {
+               continue;
             }
-            const [hour, min] = DateUtil.getLocalAirTime(x.broadcast.start_time);
-            x.adjusted_airtime = { hour: hour, min: min };
-            x.adjusted_weekday = DateUtil.getLocalAirday(x.broadcast.day_of_the_week, x.broadcast.start_time);
-         })
+            const [hour, min] = DateUtil.getLocalAirTime(w.broadcast.start_time);
+            w.adjusted_airtime = { hour: hour, min: min };
+            w.adjusted_weekday = DateUtil.getLocalAirday(w.broadcast.day_of_the_week, w.broadcast.start_time);
+         }
+
          this.watchedLoadingSubject.next(false);
          return watched;
       })
    );
 
    private load = async () => {
-      const response = await window.fetch('anime/season/2021/winter?limit=100');
+      const [year, season] = DateUtil.getCurrentSeason();
+      const response = await window.fetch(`anime/season/${year}/${season}?limit=100`);
       const json = await response.json();
       const data = json.data.map((x: { node: AnimeEntry }) => x.node);
       this.seasonSubject.next(data);
@@ -63,9 +67,7 @@ export class AnimeProvider {
    };
 
    constructor() {
-      (async () => {
-         await this.load();
-      })();
+      this.load();
    }
 }
 

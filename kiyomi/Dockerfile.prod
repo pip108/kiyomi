@@ -1,5 +1,4 @@
 FROM node:14-slim as build
-RUN apt-get update && apt-get install python -y
 WORKDIR /kiyomi
 COPY package*.json ./
 RUN npm install --silent

@@ -7,17 +7,50 @@ export class DateUtility {
       return [Number(hour_str), Number(min_str)];
    }
 
-   public getLocalAirTime(start_time: string): number[] {
+   public getAirDate(date_string: string): Date {
+      const date = new Date();
+      if (!date_string) {
+         return date;
+      }
+      const [y, m, d] = date_string.split('-');
+      if (y && m && d) {
+         date.setFullYear(Number(y));
+         date.setMonth(Number(m));
+         date.setDate(Number(d));
+      }
+      return date;
+   }
 
+   public getCurrentSeason(): string[] {
+      // winter 	January, February, March
+      // spring 	April, May, June
+      // summer 	July, August, September
+      // fall 	October, November, December
+      const now = new Date();
+      const year = now.getFullYear().toString();
+      const month = now.getMonth();
+      if (month < 3) {
+         return [year, 'winter'];
+      }
+      if (month < 6) {
+         return [year, 'spring'];
+      }
+      if (month < 9) {
+         return [year, 'summer'];
+      }
+      return [year, 'fall'];
+   }
+
+   public getLocalAirTime(start_time: string): number[] {
       const [hour, min] = this.parseTime(start_time);
 
-      const jst = new Date(new Date().toLocaleString('JP', { timeZone: 'Asia/Tokyo' }));
+      const jst = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
 
       const local = new Date();
       const localTime = local.getTime();
       const jstTime = jst.getTime();
-      const msDiff = Math.abs(localTime - jstTime);
 
+      const msDiff = Math.abs(localTime - jstTime);
       const fixOffset = new Date();
       fixOffset.setHours(hour);
       fixOffset.setMinutes(min);

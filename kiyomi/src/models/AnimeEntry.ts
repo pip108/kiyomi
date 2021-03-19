@@ -13,4 +13,6 @@ export interface AnimeEntry {
    average_episode_duration: number; // seconds
    adjusted_airtime: { hour: number, min: number }
    adjusted_weekday: number;
+   start_date: string;
+   end_date: string;
 }

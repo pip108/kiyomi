@@ -24,7 +24,7 @@ const AnimeCard: React.FC<ContainerProps> = props => {
       <IonCard class="anime-card" button={true} onClick={click}>
          <div className="flex-container">
             <div className="card-image-container">
-               <img src={props.image} className="anime-image" alt={props.title} />
+               <img src={props.image} className="anime-image" alt={'No image available'} />
             </div>
             <div className="card-content-container">
                <p className="checkbox">

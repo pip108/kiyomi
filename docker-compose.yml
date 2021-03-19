@@ -1,45 +1,48 @@
 version: "3.9"
 
 services:
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    ports:
+      - 3306:3306
+
   kiyomi-api:
     restart: unless-stopped
     environment: 
-      - PORT=${KIYOMI_API_PORT}
+      - API_PORT=${API_PORT}
+      - PROXY_PORT=${PROXY_PORT}
       - HOST=0.0.0.0
-      - DB_DIR=${DB_DIR}
-    volumes:
-      - kiyomi-db:${DB_DIR}
-    build:
-      context: ./kiyomi-api
-    ports:
-      - ${KIYOMI_API_PORT}:${KIYOMI_API_PORT}
-  mal-api-proxy:
-    restart: unless-stopped
-    environment: 
-      - PORT=${MAL_API_PROXY_PORT}:${MAL_API_PROXY_PORT}
-      - HOST=0.0.0.0
-      - NODE_ENV=development
       - MAL_API_CLIENT_ID=${MAL_API_CLIENT_ID}
       - MAL_API_CLIENT_SECRET=${MAL_API_CLIENT_SECRET}
       - MAL_API_REFRESH_TOKEN=${MAL_API_REFRESH_TOKEN}
-    build: 
-      context: ./mal-api-proxy
+      - DB_HOST=mariadb
+      - DB_USER=root
+      - DB_PW=example
+      - DB_DATABASE=kiyomi
+    volumes:
+      - ./kiyomi-api:/opt/kiyomi/api
+    build:
+      context: ./kiyomi-api
     ports:
-      - ${MAL_API_PROXY_PORT}
+      - ${API_PORT}
+    depends_on:
+      - db
+
   kiyomi:
     image: kiyomi-dev
     environment: 
       - CHOKIDAR_USEPOLLING=true
+      - PORT=${APP_PORT}
+      - API_PORT=${API_PORT}
     volumes:
-      - ./kiyomi/:/kiyomi/
-      - /kiyomi/node_modules/
+      - ./kiyomi/:/opt/kiyomi/app
     depends_on:
       - kiyomi-api
-      - mal-api-proxy
     build:
       context: ./kiyomi
     ports:
       - 3000:3000
 
-volumes:
-  kiyomi-db:

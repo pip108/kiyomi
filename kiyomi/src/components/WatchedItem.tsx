@@ -15,6 +15,8 @@ const WatchedItem: React.FC<WatchedItemProps> = props => {
 
    const [searchTerm, setSearchTerm] = useState('');
    const [showCountdown, setShowCountdown] = useState(false);
+   const [notYetAired, setNotYetAired] = useState(false);
+   const [finishedAiring, setFinishedAiring] = useState(false);
 
 
    useEffect(() => {
@@ -26,6 +28,8 @@ const WatchedItem: React.FC<WatchedItemProps> = props => {
    useEffect(() => {
       const date = new Date();
       setShowCountdown(date.getDay() === props.anime.adjusted_weekday);
+      setFinishedAiring(date > DateUtil.getAirDate(props.anime.end_date));
+      setNotYetAired(date < DateUtil.getAirDate(props.anime.end_date));
    }, [props.anime.adjusted_weekday]);
 
    useEffect(() => {
@@ -39,10 +43,15 @@ const WatchedItem: React.FC<WatchedItemProps> = props => {
          </IonThumbnail>
          <IonLabel className="watched-label">
             <h2>
-               {DateUtil.padNumber(props.anime.adjusted_airtime.hour)}:
-               {DateUtil.padNumber(props.anime.adjusted_airtime.min)}
+               {(!notYetAired && !finishedAiring) && 
+               <span>
+                  {DateUtil.padNumber(props.anime.adjusted_airtime.hour)}:
+                  {DateUtil.padNumber(props.anime.adjusted_airtime.min)}
+               </span>
+               }
                {showCountdown &&
-                  <span> - <Countdown anime={props.anime} /></span>}</h2>
+                  <span> - <Countdown anime={props.anime} /></span>}
+            </h2>
             <h3><strong>{props.anime.title}</strong></h3>
             <p>
                <a target="_blank" rel="noopener noreferrer" href={`https://nyaa.si/?f=0&c=1_2&q=${searchTerm}`}>Search nyaa.si</a>
