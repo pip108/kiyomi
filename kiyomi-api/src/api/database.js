@@ -4,17 +4,17 @@ const User = require('./user');
 const db_name = 'kiyomi';
 const table_prefix = 'km'
 
-const user = `${db_name}.${table_prefix}_user`;
-const user_table =  `
-CREATE TABLE IF NOT EXISTS ${user}
+const user_table = `${db_name}.${table_prefix}_user`;
+const user_table_create =  `
+CREATE TABLE IF NOT EXISTS ${user_table}
 (
    id INT NOT NULL AUTO_INCREMENT KEY,
    name TEXT NOT NULL
 );`;
 
-const user_watching = `${ db_name }.${ table_prefix }_user_watching`;
-const user_watching_table = 
-`CREATE TABLE IF NOT EXISTS ${user_watching}
+const user_watching_table = `${ db_name }.${ table_prefix }_user_watching`;
+const user_watching_table_create = 
+`CREATE TABLE IF NOT EXISTS ${user_watching_table}
 (
    user_id INTEGER NOT NULL,
    anime_id INTEGER NOT NULL,
@@ -27,8 +27,8 @@ const user_watching_table =
 const db_bootstrap = {
    create: `CREATE DATABASE IF NOT EXISTS ${db_name};`,
    tables: [
-      user_table,
-      user_watching_table
+      user_table_create,
+      user_watching_table_create
    ]
 }
 
@@ -47,9 +47,9 @@ class KiyomiDB {
             await conn.query(tbl);
          }
          conn.release();
-         console.log(`Created database ${db_name}`);
+         console.log(`Database ${db_name} OK.`);
       } catch (e) {
-         console.log('db bootstrap failed', e.toString());
+         console.log(`Database ${db_name} failure`, e.toString());
       } finally {
          conn?.release();
       }
@@ -70,16 +70,16 @@ class KiyomiDB {
 
    async getUserByName(name) {
       const result = await this
-         .query(`select * from ${user} left join
-          ${user_watching} on ${user}.id = ${user_watching}.user_id where ${user}.name = ? ;`, [name]);
+         .query(`select * from ${user_table} left join
+          ${user_watching_table} on ${user_table}.id = ${user_watching_table}.user_id where ${user_table}.name = ? ;`, [name]);
 
      return this.parseUser(result);
    }
 
    async getUserById(id) {
       const result = await this
-         .query(`select * from ${user} left join
-          ${user_watching} on ${user}.id = ${user_watching}.user_id where ${user}.id = ?;`, [id]);
+         .query(`select * from ${user_table} left join
+          ${user_watching_table} on ${user_table}.id = ${user_watching_table}.user_id where ${user_table}.id = ?;`, [id]);
       return this.parseUser(result);
    }
 
@@ -90,24 +90,24 @@ class KiyomiDB {
 
    async insertUser(user) {
       const result = await this
-         .query(`insert into ${user} (name) values(?)`, [user.name]);
+         .query(`insert into ${user_table} (name) values(?)`, [user.name]);
       return result.insertId;
    }
 
    async updateUser(user) {
       await this
-         .query(`update ${user} set name = ? where id = ?`, [user.name, user.id]);
+         .query(`update ${user_table} set name = ? where id = ?`, [user.name, user.id]);
    }
 
    async watchedExists(userId, animeId) {
       const result = await this
-         .query(`select 1 from ${user_watching} where user_id = ? and anime_id = ?`, [userId, animeId]);
+         .query(`select 1 from ${user_watching_table} where user_id = ? and anime_id = ?`, [userId, animeId]);
       return result.length > 0;
    }
 
    async addWatched(userId, animeId) {
       return this
-         .query(`insert into ${user_watching} (user_id, anime_id) values (?, ?)`, [userId, animeId])
+         .query(`insert into ${user_watching_table} (user_id, anime_id) values (?, ?)`, [userId, animeId])
    }
 
    async deleteWatched(userId, animeId) {

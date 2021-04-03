@@ -1,6 +1,12 @@
 FROM node:14-slim as build
-WORKDIR /kiyomi
+WORKDIR /opt/kiyomi/app
 COPY package*.json ./
-RUN npm install --silent
+COPY package.json .
+COPY yarn.lock .
+RUN yarn install --production
 COPY . . 
-RUN npm run build
+RUN yarn build
+
+FROM nginx:latest
+COPY nginx /etc/nginx/templates
+COPY --from=build /opt/kiyomi/app/build /usr/share/nginx/html

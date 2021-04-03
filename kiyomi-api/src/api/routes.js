@@ -45,6 +45,7 @@ module.exports = function (app, db) {
                 const createdUser = await db.getUserById(id);
                 res.status(201).json(createdUser);
             } catch (e) {
+                console.log(e.toString());
                 res.sendStatus(500);
             }
         }
@@ -68,6 +69,7 @@ module.exports = function (app, db) {
             user = await db.getUser(user.id);
             res.json(user);
         } catch (e) {
+            console.log(e.toString());
             res.sendStatus(500);
         }
     });
@@ -91,7 +93,7 @@ module.exports = function (app, db) {
             await db.addWatched(req.params.userId, req.body.animeId);
             res.sendStatus(204);
         } catch (e) {
-            console.log(e);
+            console.log(e.toString());
             res.sendStatus(500);
         }
     });
@@ -102,7 +104,7 @@ module.exports = function (app, db) {
             await db.deleteWatched(req.params.userId, req.params.animeId);
             res.sendStatus(204);
         } catch (e) {
-            console.error(e);
+            console.log(e.toString());
             res.sendStatus(500);
         }
     });
@@ -116,6 +118,7 @@ module.exports = function (app, db) {
             const watching = await db.getWatched(req.params.userId);
             res.json(watching);
         } catch (e) {
+            console.log(e.toString())
             res.sendStatus(500);
         }
     });

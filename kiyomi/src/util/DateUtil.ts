@@ -91,10 +91,7 @@ export class DateUtility {
    }
 
    public getDateLabel(date: Date): string {
-      return this.getCapitalizedDay(date.getDay())
-         + ' ' + date.getDate()
-         + '.' + (date.getMonth() + 1)
-         + '.' + date.getFullYear();
+      return this.getCapitalizedDay(date.getDay());
    }
 
    public getRestOfWeek(date: Date): Date[] {

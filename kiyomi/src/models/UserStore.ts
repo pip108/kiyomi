@@ -31,6 +31,10 @@ export class UserProvider {
       return this.initPromise;
    }
 
+   private saveUser(): void {
+
+   }
+
    public async setUser(user: User) {
       const method = user.id === 0 ? HttpClient.post : HttpClient.put;
       const url = user.id === 0 ? '/kiyomi/user' : `/kiyomi/user/${user.id}`;
@@ -59,6 +63,7 @@ export class UserProvider {
          const user = await HttpClient.get(`kiyomi/user?name=${name}`);
          if (user) {
             this.userSubject.next(user);
+             localStorage.setItem(UserProvider.USERID_STORAGE_KEY, user.id.toString());
             return true;
          }
          return false;

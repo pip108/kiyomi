@@ -27,9 +27,11 @@ const WatchedItem: React.FC<WatchedItemProps> = props => {
 
    useEffect(() => {
       const date = new Date();
-      setShowCountdown(date.getDay() === props.anime.adjusted_weekday);
-      setFinishedAiring(date > DateUtil.getAirDate(props.anime.end_date));
-      setNotYetAired(date < DateUtil.getAirDate(props.anime.end_date));
+      const finished_airing = date > DateUtil.getAirDate(props.anime.end_date);
+      const not_yet_aired = date < DateUtil.getAirDate(props.anime.start_date);
+      setFinishedAiring(finished_airing);
+      setNotYetAired(not_yet_aired);
+      setShowCountdown(date.getDay() === props.anime.adjusted_weekday && !finished_airing && !notYetAired);
    }, [props.anime.adjusted_weekday]);
 
    useEffect(() => {
@@ -43,12 +45,18 @@ const WatchedItem: React.FC<WatchedItemProps> = props => {
          </IonThumbnail>
          <IonLabel className="watched-label">
             <h2>
-               {(!notYetAired && !finishedAiring) && 
                <span>
-                  {DateUtil.padNumber(props.anime.adjusted_airtime.hour)}:
-                  {DateUtil.padNumber(props.anime.adjusted_airtime.min)}
+                  {notYetAired && <span>
+                     Starting {DateUtil.getAirDate(props.anime.start_date).toLocaleDateString('fi-FI')}&nbsp;
+                  </span>}
+                  {finishedAiring ? <span>Finished airing ({DateUtil.getAirDate(props.anime.end_date).toLocaleDateString('fi-FI')})</span>
+                     :
+                     <span>
+                        {DateUtil.padNumber(props.anime.adjusted_airtime.hour)}:
+                        {DateUtil.padNumber(props.anime.adjusted_airtime.min)}
+                     </span>
+                  }
                </span>
-               }
                {showCountdown &&
                   <span> - <Countdown anime={props.anime} /></span>}
             </h2>

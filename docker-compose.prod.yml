@@ -1,41 +1,49 @@
-version: "3.9"
+version: '3'
 
 services:
-  kiyomi-api:
-    restart: unless-stopped
-    environment: 
-      - PORT=${KIYOMI_API_PORT}
-      - HOST=0.0.0.0
-      - DB_DIR=${DB_DIR}
-    volumes:
-      - kiyomi-db:${DB_DIR}
+  db:
+    image: kiyomi-mariadb:prod
+    restart: always
     build:
-      context: ./kiyomi-api
+      context: ./mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - ${KIYOMI_API_PORT}
-  mal-api-proxy:
+      - 3306:3306
+
+  kiyomi-api:
+    image: kiyomi-api:0.1.1
     restart: unless-stopped
     environment: 
-      - PORT=${MAL_API_PROXY_PORT}
-      - HOST=0.0.0.0
-      - NODE_ENV=production
+      - PORT=${API_PORT}
       - MAL_API_CLIENT_ID=${MAL_API_CLIENT_ID}
       - MAL_API_CLIENT_SECRET=${MAL_API_CLIENT_SECRET}
       - MAL_API_REFRESH_TOKEN=${MAL_API_REFRESH_TOKEN}
-    build: 
-      context: ./mal-api-proxy
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+    build:
+      context: ./kiyomi-api
+      dockerfile: Dockerfile.prod
     ports:
-      - ${MAL_API_PROXY_PORT}
+      - ${API_PORT}
+    depends_on:
+      - db
+
   kiyomi:
-    restart: unless-stopped
+    image: kiyomi:0.1.1
+    environment: 
+      - API_PORT=${API_PORT}
     depends_on:
       - kiyomi-api
-      - mal-api-proxy
     build:
       context: ./kiyomi
       dockerfile: Dockerfile.prod
     ports:
       - 80:80
+      - 443:443
 
-volumes:
-  kiyomi-db:

@@ -13,6 +13,7 @@ const Countdown: React.FC<CountdownProps> = props => {
    useEffect(() => {
       const calcCoundown = () => {
          const now = new Date();
+
          const airtimeSecondsFromMidnight = props.anime.adjusted_airtime.hour * 60 * 60
             + props.anime.adjusted_airtime.min * 60;
          const secondsFromMidnight = now.getHours() * 60 * 60

@@ -1,0 +1,15 @@
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+    location / {
+        try_files $uri /index.html;
+    }
+
+    location /anime/ {
+        proxy_pass http://kiyomi-api:${API_PORT};
+    }
+
+    location /kiyomi/ {
+        proxy_pass http://kiyomi-api:${API_PORT};
+    }
+}

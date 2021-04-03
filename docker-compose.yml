@@ -1,27 +1,31 @@
-version: "3.9"
+version: '3'
 
 services:
   db:
-    image: mariadb
+    image: kiyomi-mariadb
     restart: always
+    build:
+      context: ./mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: example
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - 3306:3306
 
   kiyomi-api:
+    image: kiyomi-api:dev
     restart: unless-stopped
     environment: 
-      - API_PORT=${API_PORT}
-      - PROXY_PORT=${PROXY_PORT}
-      - HOST=0.0.0.0
+      - PORT=${API_PORT}
       - MAL_API_CLIENT_ID=${MAL_API_CLIENT_ID}
       - MAL_API_CLIENT_SECRET=${MAL_API_CLIENT_SECRET}
       - MAL_API_REFRESH_TOKEN=${MAL_API_REFRESH_TOKEN}
-      - DB_HOST=mariadb
-      - DB_USER=root
-      - DB_PW=example
-      - DB_DATABASE=kiyomi
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
     volumes:
       - ./kiyomi-api:/opt/kiyomi/api
     build:
@@ -32,7 +36,7 @@ services:
       - db
 
   kiyomi:
-    image: kiyomi-dev
+    image: kiyomi:dev
     environment: 
       - CHOKIDAR_USEPOLLING=true
       - PORT=${APP_PORT}
