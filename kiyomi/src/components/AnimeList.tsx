@@ -9,36 +9,36 @@ import AnimeCard from './AnimeCard';
 
 const AnimeList: React.FC = () => {
 
-   const [season, setSeason] = useState<AnimeEntry[]>([]);
+  const [season, setSeason] = useState<AnimeEntry[]>([]);
 
-   useEffect(() => {
-      const s = combineLatest([AnimeStore.season$, UserStore.user$.pipe(map(u => u ? u.watching : []))])
-         .pipe(map(([season, watching]) => {
-            season.forEach(entry => {
-               if (watching.includes(entry.id)) {
-                  entry.watching = true;
-               } else {
-                  entry.watching = false;
-               }
-            });
-            return [...season];
-         })).subscribe(setSeason)
-      return () => s.unsubscribe();
-   }, []);
+  useEffect(() => {
+    const s = combineLatest([AnimeStore.season$, UserStore.user$.pipe(map(u => u ? u.watching : []))])
+      .pipe(map(([season, watching]) => {
+        for (const entry of season) {
+          if (watching.includes(entry.id)) {
+            entry.watching = true;
+          } else {
+            entry.watching = false;
+          }
+        }
+        return [...season];
+      })).subscribe(setSeason)
+    return () => s.unsubscribe();
+  }, []);
 
-   return (
-      <IonList>
-         <IonGrid>
-            <IonRow>
-               {season.map(entry =>
-                  <IonCol size="4" style={{ height: '320px', marginBottom: '10px' }} key={entry.id}>
-                     <AnimeCard id={entry.id} title={entry.title} image={entry.main_picture?.medium} watching={entry.watching}></AnimeCard>
-                  </IonCol>
-               )}
-            </IonRow>
-         </IonGrid>
-      </IonList>
-   )
+  return (
+    <IonList>
+      <IonGrid>
+        <IonRow>
+          {season.map(entry =>
+            <IonCol size="4" style={{ height: '320px', marginBottom: '10px' }} key={entry.id}>
+              <AnimeCard id={entry.id} title={entry.title} image={entry.main_picture?.medium} watching={entry.watching}></AnimeCard>
+            </IonCol>
+          )}
+        </IonRow>
+      </IonGrid>
+    </IonList>
+  )
 }
 
 export default AnimeList;

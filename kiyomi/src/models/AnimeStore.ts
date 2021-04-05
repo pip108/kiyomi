@@ -21,11 +21,11 @@ export class AnimeProvider {
             return s;
          }
          const filtered: AnimeEntry[] = [];
-         s.forEach(x => {
-            if (x.title.toLowerCase().includes(f.toLocaleLowerCase())) {
-               filtered.push(x);
-            }
-         });
+         for (const x of s) {
+             if (x.title.toLowerCase().includes(f.toLowerCase())) {
+                 filtered.push(x);
+             }
+         }
          return filtered;
       }))
 
