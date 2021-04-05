@@ -35,7 +35,7 @@ services:
       - db
 
   kiyomi:
-    image: kiyomi:0.1.1
+    image: kiyomi:0.1.2
     environment: 
       - API_PORT=${API_PORT}
     depends_on:
