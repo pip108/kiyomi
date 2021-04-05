@@ -59,7 +59,7 @@ export class AnimeProvider {
 
    private load = async () => {
       const [year, season] = DateUtil.getCurrentSeason();
-      const response = await window.fetch(`anime/season/${year}/${season}?limit=100`);
+      const response = await window.fetch(`anime/season/${year}/${season}?limit=300`);
       const json = await response.json();
       const data = json.data.map((x: { node: AnimeEntry }) => x.node);
       this.seasonSubject.next(data);

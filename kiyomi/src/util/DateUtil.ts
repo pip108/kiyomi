@@ -15,9 +15,10 @@ export class DateUtility {
       const [y, m, d] = date_string.split('-');
       if (y && m && d) {
          date.setFullYear(Number(y));
-         date.setMonth(Number(m));
+         date.setMonth(Number(m) -1);
          date.setDate(Number(d));
       }
+      console.log(`airdate for ${date_string}`, date);
       return date;
    }
 

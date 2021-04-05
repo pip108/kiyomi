@@ -15,7 +15,7 @@ services:
       - 3306:3306
 
   kiyomi-api:
-    image: kiyomi-api:0.1.1
+    image: kiyomi-api:0.1.2
     restart: unless-stopped
     environment: 
       - PORT=${API_PORT}
