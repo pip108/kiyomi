@@ -45,11 +45,8 @@ export class DateUtility {
    public getLocalAirTime(start_time: string): number[] {
       const [hour, min] = this.parseTime(start_time);
 
-      const jst = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
-
-      const local = new Date();
-      const localTime = local.getTime();
-      const jstTime = jst.getTime();
+      const jstTime = Date.parse(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+      const localTime = Date.now();
 
       const msDiff = Math.abs(localTime - jstTime);
       const fixOffset = new Date();
@@ -64,9 +61,7 @@ export class DateUtility {
 
    public getLocalAirday(weekday: string, start_time: string): number {
       let weekday_num = Constants.Weekdays.indexOf(weekday);
-      const jst = new Date(new Date().toLocaleString('JP', { timeZone: 'Asia/Tokyo' }));
-
-      const jstTime = jst.getTime();
+      const jstTime = Date.parse(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const localTime = Date.now();
       const msDiff = Math.abs(localTime - jstTime);
       const adjustment = (localTime < jstTime ? -1 : 1) * msDiff;

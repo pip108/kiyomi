@@ -43,6 +43,7 @@ export class AnimeProvider {
          }
          const watched = await Promise.all(fetches);
 
+         console.log(watched);
          for (const w of watched) {
             if (!w.broadcast) {
                continue;
