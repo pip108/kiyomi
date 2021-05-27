@@ -18,7 +18,6 @@ export class DateUtility {
          date.setMonth(Number(m) -1);
          date.setDate(Number(d));
       }
-      console.log(`airdate for ${date_string}`, date);
       return date;
    }
 
@@ -47,7 +46,6 @@ export class DateUtility {
 
       const jstTime = Date.parse(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const localTime = Date.now();
-
       const msDiff = Math.abs(localTime - jstTime);
       const fixOffset = new Date();
       fixOffset.setHours(hour);
