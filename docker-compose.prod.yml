@@ -11,6 +11,8 @@ services:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes: 
+      - mariadb-data:/var/lib/mysql
     ports:
       - 3306:3306
 
@@ -35,6 +37,7 @@ services:
       - db
 
   kiyomi:
+    restart: unless-stopped
     image: kiyomi:0.1.2
     environment: 
       - API_PORT=${API_PORT}
@@ -47,3 +50,5 @@ services:
       - 80:80
       - 443:443
 
+volumes:
+  mariadb-data:
