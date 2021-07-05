@@ -9,6 +9,4 @@ RUN yarn build
 
 FROM nginx:latest
 COPY nginx /etc/nginx/templates
-COPY cert/cert.pem /etc/nginx/cert.pem
-COPY cert/privkey.pem /etc/nginx/privkey.pem
 COPY --from=build /opt/kiyomi/app/build /usr/share/nginx/html
