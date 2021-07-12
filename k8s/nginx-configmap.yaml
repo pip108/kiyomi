@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kiyomi-web-nginx-config
+  namespace: kiyomi
+data:
+  default.conf: |
+    server {
+        listen 80;
+        root /usr/share/nginx/html;
+        location / {
+            try_files $uri /index.html;
+        }
+
+        location /anime/ {
+            proxy_pass http://kiyomi-api.kiyomi.svc.local:3001;
+        }
+
+        location /kiyomi/ {
+            proxy_pass http://kiyomi-api.kiyomi.svc.local:3001;
+        }
+    }

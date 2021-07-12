@@ -46,7 +46,15 @@ spec:
               secretKeyRef:
                 name: kiyomi-mariadb-credentials
                 key: user-password
+        volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: kiyomi-db-persistent-storage
         resources:
           limits:
             memory: "1024Mi" 
             cpu: "250m"
+      volumes:
+        - name: kiyomi-db-persistent-storage
+          persistentVolumeClaim:
+            claimName: kiyomi-db-volumeclaim
+

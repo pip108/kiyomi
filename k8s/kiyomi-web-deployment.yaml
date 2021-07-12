@@ -5,14 +5,12 @@ metadata:
   namespace: kiyomi
 spec:
   type: NodePort
-  externalIPs:
-    - "192.168.108.195" 
   selector:
     app: kiyomi-web
   ports:
-  - name: kiyomi-http
-    port: 8034
+  - port: 80
     targetPort: 80
+    nodePort: 30111 
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -20,7 +18,6 @@ metadata:
   name: kiyomi-web 
   namespace: kiyomi
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: kiyomi-web
@@ -32,42 +29,21 @@ spec:
       containers:
       - name: kiyomi-web
         image: registry.pattern.blue/kiyomi
-        imagePullPolicy: Always 
+        imagePullPolicy: IfNotPresent 
         resources:
           limits:
-            cpu: "500m"
+            cpu: "250m"
             memory: "512Mi" 
         ports:
         - containerPort: 80
-        - containerPort: 443
         volumeMounts:
           - mountPath: /etc/nginx/conf.d
             name: kiyomi-web-nginx-config
       volumes:
         - name: kiyomi-web-nginx-config
           configMap:
-            name: kiyomi-web-nginx-config 
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: kiyomi-web-nginx-config
-  namespace: kiyomi
-data:
-  default.conf: |
-    server {
-        listen 80;
-        root /usr/share/nginx/html;
-        location / {
-            try_files $uri /index.html;
-        }
-
-        location /anime/ {
-            proxy_pass http://kiyomi-api:3001;
-        }
-
-        location /kiyomi/ {
-            proxy_pass http://kiyomi-api:3001;
-        }
-    }
-
+            name: kiyomi-web-nginx-config
+            items:
+              - key: default.conf
+                path: default.conf
+        
