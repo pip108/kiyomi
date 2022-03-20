@@ -14,11 +14,12 @@ const proxy_config = {
 };
 
 module.exports = function (express) {
-   return function () {
+   return async function () {
+      const get_token = await getToken();
       const router = express.Router();
 
       router.use(async (req, _, next) => {
-         const token = await getToken();
+         const token = await get_token();
          req.headers.Authorization = `Bearer ${token}`;
          console.log(req.path);
          next();

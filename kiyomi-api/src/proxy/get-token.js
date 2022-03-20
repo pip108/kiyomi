@@ -19,7 +19,7 @@ async function renewToken() {
         const res = await axios.post('https://myanimelist.net/v1/oauth2/token', params, { auth });
         return res.data;
     } catch (e) {
-        console.log(e.toString());
+        console.log(e);
     }
 }
 
@@ -37,13 +37,21 @@ function expiresSoon(token) {
     return Math.abs(token.expires_in - Date.now() / 1000) > 2592000;
 }
 
-let token = null;
-module.exports = async function getToken() {
-    if (!token) {
-        token = await checkFile();
+module.exports = function getToken() {
+    let token = null;
+    return async function () {
+        console.log(mal_credentials);
+        if (!token) {
+            token = await checkFile();
+        }
+        if (!token || expiresSoon(token)) {
+            try {
+                token = await renewToken(mal_credentials);
+            } catch (e) {
+                console.log(e);
+                throw e;
+            }
+        }
+        return token.access_token;
     }
-    if (!token || expiresSoon(token)) {
-        token = await renewToken(mal_credentials);
-    }
-    return token.access_token;
 }

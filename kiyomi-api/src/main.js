@@ -6,9 +6,12 @@ const proxy = require('./proxy/proxy')(express);
 
 const port = parseInt(process.env.PORT || 3001);
 
-app.use('/kiyomi', api());
-app.use('/anime', proxy());
+async function init() {
+    app.use('/kiyomi', api());
+    app.use('/anime', await proxy());
+    app.listen(port, () => {
+        console.log(`Kiyomi API on http://localhost:${port}`);
+    });
+}
 
-app.listen(port, () => {
-    console.log(`Kiyomi API on http://localhost:${port}`);
-});
+init();

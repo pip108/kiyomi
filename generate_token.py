@@ -3,8 +3,8 @@ import requests
 import secrets
 
 
-CLIENT_ID = 'your_mal_api_client_id'
-CLIENT_SECRET = 'your_mal_api_client_secret'
+CLIENT_ID = '3ffab16a12e10f2b84fa5a1f1575ba4d'
+CLIENT_SECRET = '0a9d1bfce5c5bfeefb39d666353b0704804301ea08560f5182362b8bb5745a07'
 
 
 # 1. Generate a new Code Verifier / Code Challenge.
